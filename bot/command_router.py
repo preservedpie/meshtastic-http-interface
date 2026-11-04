@@ -114,8 +114,12 @@ class CommandRouter:
         return None
 
     def get_help(self) -> str:
+        from .commands import network_commands_enabled
+        show_network = network_commands_enabled()
         lines = ["Available commands:"]
         for c in COMMANDS:
+            if c.get('network') and not show_network:
+                continue
             aliases = c.get('aliases', [])
             alias_str = f" ({', '.join(aliases)})" if aliases else ''
             lines.append(f"  {c['name']}{alias_str}: {c.get('description','')}")

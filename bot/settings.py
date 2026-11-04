@@ -101,10 +101,13 @@ SCHEMA: list = [
      'kind': 'text', 'group': 'Weather', 'default': ''},
 
     # --- Modules ---
+    {'key': 'ALLOW_NETWORK_COMMANDS',
+     'label': 'Allow network commands (pingip/gw/wan/nmap) from mesh users',
+     'kind': 'bool', 'group': 'Modules', 'default': 'false'},
     {'key': 'ALLOW_PYTHON_MODULES', 'label': 'Allow raw-Python modules',
      'kind': 'bool', 'group': 'Modules', 'default': 'false'},
     {'key': 'SHELL_ALLOWLIST', 'label': 'Shell command allowlist (comma sep)',
-     'kind': 'text', 'group': 'Modules', 'default': 'echo,uptime,date,df,free,ping,nmap'},
+     'kind': 'text', 'group': 'Modules', 'default': 'echo,uptime,date,df,free'},
 ]
 
 _SCHEMA_BY_KEY = {s['key']: s for s in SCHEMA}

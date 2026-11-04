@@ -17,6 +17,21 @@ from .news import news_command
 from .netinfo import (pingip_command, gw_command, wan_command, nmap_command)
 from .timeinfo import date_command, ntp_command
 from .ask import ask_command, query_llm, clear_history  # noqa: F401
+from .. import settings
+
+
+def network_commands_enabled() -> bool:
+    """pingip/gw/wan/nmap run from the host's own network, and any mesh user
+    on a channel the bot listens to can trigger them - so they're opt-in."""
+    return settings.get_bool('ALLOW_NETWORK_COMMANDS', False)
+
+
+def _network_only(handler):
+    def gated(args: str, context: dict) -> str:
+        if not network_commands_enabled():
+            return "Network commands are disabled on this bot."
+        return handler(args, context)
+    return gated
 
 
 def new_session_command(args: str, context: dict) -> str:
@@ -70,15 +85,15 @@ COMMANDS = [
     {'name': 'news', 'handler': news_command, 'aliases': ['headlines'],
      'phrases': ['latest news', 'top news'],
      'description': 'Top headlines (usage: news [us|world|tech|sci])'},
-    {'name': 'pingip', 'handler': pingip_command, 'aliases': ['png'],
+    {'name': 'pingip', 'handler': _network_only(pingip_command), 'network': True, 'aliases': ['png'],
      'phrases': [], 'description': 'Ping an IP/host (usage: pingip <host>)'},
-    {'name': 'gw', 'handler': gw_command, 'aliases': ['gateway'],
+    {'name': 'gw', 'handler': _network_only(gw_command), 'network': True, 'aliases': ['gateway'],
      'phrases': ['ping gateway'],
      'description': 'Ping the default gateway'},
-    {'name': 'wan', 'handler': wan_command, 'aliases': ['inet', 'internet'],
+    {'name': 'wan', 'handler': _network_only(wan_command), 'network': True, 'aliases': ['inet', 'internet'],
      'phrases': ['ping internet', 'is the internet up'],
      'description': 'Ping the internet (usage: wan [host])'},
-    {'name': 'nmap', 'handler': nmap_command, 'aliases': ['scan'],
+    {'name': 'nmap', 'handler': _network_only(nmap_command), 'network': True, 'aliases': ['scan'],
      'phrases': [], 'description': 'nmap top-ports scan (usage: nmap <target>)'},
     {'name': 'date', 'handler': date_command, 'aliases': ['sysdate', 'now'],
      'phrases': ["what's the date", 'system time'],

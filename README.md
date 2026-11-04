@@ -32,7 +32,7 @@ in Docker.
 **Mesh bot commands** (prefix optional, default `/`): `status`, `ping`,
 `time`, `uptime`, `weather [tomorrow|3d|7d] [city]`, `sun`, `nodes`, `rf`,
 `mesh`, `telem`, `news`, `date`, `ntp`, `dice`, `echo`, `pingip`, `gw`,
-`wan`, `nmap`, `ask <question>` (LLM), and `help`. If a message doesn't
+`wan`, `nmap` (network commands are opt-in, see Security), `ask <question>` (LLM), and `help`. If a message doesn't
 match a command, it can go to the LLM instead. You can also add custom
 modules from the UI that call an HTTP endpoint, run an allowlisted shell
 command, ping a host, return fixed text, or (if explicitly enabled) run
@@ -57,10 +57,11 @@ Python.
   behind a reverse proxy with authentication. Don't expose it directly to
   the internet.
 - **Bot commands are available to anyone on the channels the bot listens
-  to.** That includes `pingip` and `nmap`, which run from the host's
-  network. If the bot listens on a public channel, strangers can scan your
-  LAN. Limit the bot to private channels in the Bot tab, or remove these
-  commands.
+  to.** The network commands (`pingip`, `gw`, `wan`, `nmap`) run from the
+  host's network, so they're **off by default**. Turn them on with
+  `ALLOW_NETWORK_COMMANDS=true` (or in the Bot tab) only if the bot
+  listens solely on private channels. Otherwise strangers could scan
+  your LAN.
 - `ALLOW_PYTHON_MODULES=true` lets anyone with access to the UI run
   arbitrary Python inside the container. Leave it off unless you need it.
   Shell modules are limited to `SHELL_ALLOWLIST`.

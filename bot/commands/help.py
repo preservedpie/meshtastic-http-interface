@@ -4,10 +4,13 @@ from .. import db
 
 
 def help_command(args: str, context: dict) -> str:
-    from . import COMMANDS
+    from . import COMMANDS, network_commands_enabled
 
     lines = ["Commands:"]
+    show_network = network_commands_enabled()
     for cmd in COMMANDS:
+        if cmd.get('network') and not show_network:
+            continue
         desc = cmd.get('description', '')
         if len(desc) > 30:
             desc = desc[:27] + "..."

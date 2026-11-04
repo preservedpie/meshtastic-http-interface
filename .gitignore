@@ -1,0 +1,32 @@
+# ── Python ───────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# ── Secrets / local config ───────────────────────────────────
+# Real secrets live in .env (kept local); commit .env.example instead.
+.env
+.env.local
+*.local
+
+# ── Runtime data / logs ──────────────────────────────────────
+# data/ and logs/ keep their own .gitkeep; ignore their contents.
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# ── Editor / OS ──────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+.claude/

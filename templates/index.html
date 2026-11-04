@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meshtastic Monitor</title>
+  <script>
+    // Set the theme before first paint so there's no flash of the wrong
+    // theme. Falls back to the OS preference if the user hasn't chosen one.
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/static/style.css" />
+  <!-- Vendored locally so the app works on networks with no internet/CDN
+       access (e.g. the Raspberry Pi deployment). See static/vendor/. -->
+  <link rel="stylesheet" href="/static/vendor/leaflet.css" />
+  <script src="/static/vendor/leaflet.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="/static/vendor/react.production.min.js"></script>
+  <script src="/static/vendor/react-dom.production.min.js"></script>
+  <script src="/static/vendor/babel.min.js"></script>
+  <script type="text/babel" data-presets="react" src="/static/app.js"></script>
+</body>
+</html>

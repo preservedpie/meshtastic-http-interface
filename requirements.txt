@@ -1,0 +1,6 @@
+flask==3.0.3
+flask-cors==4.0.1
+requests==2.31.0
+gunicorn==21.2.0
+meshtastic>=2.7.8
+pyserial>=3.5

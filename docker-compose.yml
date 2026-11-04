@@ -1,0 +1,46 @@
+services:
+  flask-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: meshtastic-http-interface:latest
+    container_name: meshtastic-http-interface
+    ports:
+      - "5001:5001"
+    env_file:
+      - .env
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+      - MESHTASTIC_SERIAL_PORT=${MESHTASTIC_SERIAL_PORT:-/dev/ttyACM1}
+    restart: unless-stopped
+    devices:
+      - "${MESHTASTIC_SERIAL_PORT:-/dev/ttyACM1}:${MESHTASTIC_SERIAL_PORT:-/dev/ttyACM1}"
+    group_add:
+      - dialout
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    networks:
+      - default
+      - mesh-net
+    healthcheck:
+      # /api/health/serial (not /api/stats) so a frozen-but-still-"connected"
+      # serial link — the failure mode this app's RX watchdog was added to
+      # catch — actually shows up as unhealthy instead of a pure DB read
+      # succeeding forever. Note: this alone doesn't make Docker restart the
+      # container (restart: unless-stopped only reacts to exits, not
+      # "unhealthy"); pair with an autoheal sidecar if you want that too.
+      test: ["CMD", "python", "-c", "import os,urllib.request; urllib.request.urlopen('http://localhost:'+os.environ.get('FLASK_PORT','5001')+'/api/health/serial', timeout=5)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+# Shared bridge so this app can reach the separately-managed Ollama container by
+# name (LLM_HOST=ollama). Create it once with `docker network create mesh-net`
+# and attach Ollama with `docker network connect mesh-net ollama`.
+networks:
+  mesh-net:
+    external: true
+    name: mesh-net
